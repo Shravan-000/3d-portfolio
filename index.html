@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shravan Bhande | Web Developer and 3D Visualization Designer</title>
+<meta name="description" content="Shravan Bhande is a web developer and interior & 3D visualization designer in Mumbai. See live projects, skills and contact details.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
+<style>
+:root {
+  --night: #0D1015;
+  --ink: #12171F;
+  --lime: #E5E8E1;
+  --lime2: #D9DED4;
+  --orange: #FF5B1F;
+  --fg-d: #F1F3EE;
+  --soft-d: #A9B2BD;
+  --soft-l: #4B5560;
+  --pad: clamp(1.25rem, 4.5vw, 4rem);
+  --font: "Archivo", "Helvetica Neue", Arial, sans-serif;
+}
+html { scroll-behavior: smooth; background: var(--lime); }
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; font-family: var(--font); font-stretch: 100%; font-weight: 400;
+  font-size: 1.0625rem; line-height: 1.6; color: var(--ink); background: var(--lime);
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+h1, h2, h3, p { margin: 0; }
+.wide { font-stretch: 125%; font-weight: 800; letter-spacing: -0.035em; line-height: 0.92; }
+
+/* Fixed header: name and nav invert against any background, email button stays orange */
+.top {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50; pointer-events: none;
+  display: flex; align-items: center; gap: 2.2rem;
+  padding: calc(env(safe-area-inset-top, 0px) + 1rem) calc(var(--pad) + 9.5rem) 1rem var(--pad);
+  color: #fff; mix-blend-mode: difference;
+}
+.top a { color: #fff; text-decoration: none; font-stretch: 112%; font-weight: 700; pointer-events: auto; }
+.top .links { display: flex; gap: 1.8rem; font-size: 0.98rem; }
+.top .links a { font-weight: 500; font-stretch: 100%; }
+.top .links a:hover { text-decoration: underline; text-underline-offset: 6px; }
+.pill {
+  position: fixed; z-index: 51; right: var(--pad); top: calc(env(safe-area-inset-top, 0px) + 0.8rem);
+  background: var(--orange); color: var(--ink); text-decoration: none;
+  font-stretch: 112%; font-weight: 700; font-size: 0.98rem; padding: 0.6rem 1.1rem; border-radius: 3px;
+  transition: transform 0.2s;
+}
+.pill:hover { transform: translateY(-2px); }
+
+/* Scroll story */
+.story { position: relative; height: 400vh; }
+.stage {
+  position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
+  background: var(--bg, var(--night)); color: var(--fg, var(--fg-d));
+}
+#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.hero { position: absolute; left: var(--pad); right: var(--pad); bottom: calc(env(safe-area-inset-bottom, 0px) + 6.5vh); will-change: opacity, transform; }
+.hero h1 { font-size: clamp(3.1rem, 10.2vw, 9.6rem); margin-bottom: 1.4rem; }
+.role { font-size: clamp(1.1rem, 2vw, 1.55rem); font-weight: 600; font-stretch: 112%; max-width: 32ch; line-height: 1.25; margin-bottom: 0.8rem; }
+.sub { max-width: 34rem; color: var(--soft, var(--soft-d)); margin-bottom: 1.5rem; }
+.actions { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 1.3rem; }
+.btn {
+  display: inline-block; text-decoration: none; font-stretch: 112%; font-weight: 700; font-size: 1rem;
+  padding: 0.85rem 1.4rem; border-radius: 3px; border: 2px solid currentColor; transition: background 0.2s, color 0.2s;
+}
+.btn.main { background: var(--orange); border-color: var(--orange); color: var(--ink); }
+.btn.main:hover { filter: brightness(1.08); }
+.btn.ghost:hover { background: var(--fg, var(--fg-d)); color: var(--bg, var(--night)); }
+.quick { display: flex; flex-wrap: wrap; gap: 0.4rem 1.6rem; font-weight: 500; }
+.quick a, .quick span { text-underline-offset: 5px; }
+.quick .dim { color: var(--soft, var(--soft-d)); }
+
+.beats { position: absolute; left: var(--pad); bottom: calc(env(safe-area-inset-bottom, 0px) + 6.5vh); width: min(33rem, calc(100% - var(--pad) * 2)); height: 19rem; pointer-events: none; }
+.beat { position: absolute; left: 0; bottom: 0; opacity: 0; will-change: opacity, transform; }
+.beat h2 { font-size: clamp(2.5rem, 5.6vw, 5rem); margin-bottom: 1rem; }
+.beat p { max-width: 30rem; margin-bottom: 0.8rem; }
+.beat .tech { font-weight: 700; font-stretch: 112%; }
+.beat .tech b { display: inline-block; width: 0.7rem; height: 0.7rem; background: var(--orange); margin-right: 0.55rem; }
+
+.meter { position: absolute; right: var(--pad); bottom: calc(env(safe-area-inset-bottom, 0px) + 6.5vh); display: flex; gap: 0.9rem; opacity: 0; font-size: 0.9rem; font-weight: 500; }
+.meter span { display: block; width: 6.2rem; }
+.meter i { display: block; height: 3px; background: color-mix(in srgb, currentColor 22%, transparent); margin-bottom: 0.5rem; position: relative; overflow: hidden; }
+.meter i::after { content: ""; position: absolute; inset: 0; background: var(--orange); transform: scaleX(var(--f, 0)); transform-origin: left; }
+.cue { position: absolute; right: var(--pad); bottom: calc(env(safe-area-inset-bottom, 0px) + 6.5vh); font-size: 0.92rem; font-weight: 500; color: var(--soft, var(--soft-d)); display: flex; align-items: center; gap: 0.7rem; }
+.cue::before { content: ""; width: 2px; height: 2.4rem; background: var(--orange); animation: cue 1.8s ease-in-out infinite; transform-origin: top; }
+@keyframes cue { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
+
+/* Content sections */
+section.sec { padding: clamp(4.5rem, 10vw, 9rem) 0; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 var(--pad); }
+.h2 { font-size: clamp(2.5rem, 6.4vw, 5.6rem); }
+.lead { max-width: 36rem; color: var(--soft-l); margin-top: 1.2rem; }
+
+/* Work */
+.projects { margin-top: clamp(2.5rem, 6vw, 5rem); border-top: 2px solid var(--ink); }
+.proj { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: clamp(1.5rem, 5vw, 4.5rem); align-items: center; padding: clamp(2rem, 5vw, 3.8rem) 0; border-bottom: 1px solid rgba(18, 23, 31, 0.22); }
+.proj h3 { font-size: clamp(2rem, 4.2vw, 3.6rem); margin-bottom: 1rem; }
+.proj p { max-width: 30rem; margin-bottom: 0.9rem; }
+.proj .tech { font-weight: 600; font-stretch: 112%; color: var(--soft-l); font-size: 0.95rem; }
+.proj .btn { margin-top: 0.6rem; border-color: var(--ink); }
+.proj .btn:hover { background: var(--ink); color: var(--lime); }
+.proj .btn.main { border-color: var(--orange); }
+.proj .btn.main:hover { background: var(--ink); border-color: var(--ink); color: var(--lime); }
+.art { display: block; color: var(--ink); text-decoration: none; }
+.art .cap { display: block; font-size: 0.88rem; color: var(--soft-l); margin-top: 0.7rem; }
+.wf { width: 100%; height: auto; display: block; overflow: visible; }
+.wf .ln { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.wf .fill { opacity: 0; transition: opacity 0.55s ease; }
+.art:hover .fill, .art:focus-visible .fill { opacity: 1; }
+.art:hover .xx, .art:focus-visible .xx { opacity: 0; }
+.wf .xx { transition: opacity 0.4s; }
+.js .wf .draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.js .proj.in .wf .draw { animation: draw 1.5s cubic-bezier(.3,.7,.2,1) forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* Skills */
+.tracks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.5rem, 4vw, 3.5rem); margin-top: clamp(2.5rem, 6vw, 4.5rem); }
+.track h3 { font-size: 1.15rem; font-stretch: 112%; font-weight: 700; padding-bottom: 0.9rem; border-bottom: 2px solid var(--ink); margin-bottom: 0.2rem; }
+.track ul { list-style: none; margin: 0; padding: 0; }
+.track li { font-size: clamp(1.35rem, 2.2vw, 1.8rem); font-stretch: 112%; font-weight: 600; letter-spacing: -0.02em; padding: 0.8rem 0; border-bottom: 1px solid rgba(18, 23, 31, 0.2); position: relative; transition: padding-left 0.25s; }
+.track li::before { content: ""; position: absolute; left: 0; top: 50%; width: 0.6rem; height: 0.6rem; margin-top: -0.3rem; background: var(--orange); transform: scale(0); transition: transform 0.25s; }
+.track li:hover { padding-left: 1.4rem; }
+.track li:hover::before { transform: scale(1); }
+.track small { display: block; font-size: 0.9rem; font-weight: 400; font-stretch: 100%; letter-spacing: 0; color: var(--soft-l); }
+
+/* Experience */
+.alt { background: var(--lime2); }
+.rows { margin-top: clamp(2.5rem, 6vw, 4.5rem); border-top: 2px solid var(--ink); }
+.row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1rem 3rem; padding: 1.6rem 0; border-bottom: 1px solid rgba(18, 23, 31, 0.22); align-items: baseline; }
+.row h3 { font-size: clamp(1.5rem, 2.8vw, 2.4rem); font-stretch: 118%; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+.row p { color: var(--soft-l); }
+
+/* Contact */
+.dark { background: var(--night); color: var(--fg-d); }
+.dark .lead { color: var(--soft-d); }
+.mail-row { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; margin: clamp(2rem, 5vw, 3.5rem) 0 2rem; }
+.mail { font-size: clamp(1.5rem, 5.2vw, 4.2rem); font-stretch: 118%; font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; text-decoration-color: var(--orange); text-decoration-thickness: 4px; text-decoration-skip-ink: none; text-underline-offset: 8px; overflow-wrap: anywhere; }
+.copy { font: 700 1rem var(--font); font-stretch: 112%; background: transparent; color: var(--fg-d); border: 2px solid var(--fg-d); padding: 0.75rem 1.2rem; border-radius: 3px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+.copy:hover { background: var(--fg-d); color: var(--night); }
+.social { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 2.2rem; font-size: 1.15rem; font-weight: 500; }
+.social a { text-underline-offset: 6px; }
+.foot { margin-top: clamp(3rem, 8vw, 7rem); padding-top: 1.4rem; border-top: 1px solid rgba(241, 243, 238, 0.18); color: var(--soft-d); font-size: 0.92rem; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+
+/* No WebGL fallback: keep hero, drop the scroll story */
+.no-gl .story { height: auto; }
+.no-gl .stage { position: relative; min-height: 100vh; }
+.no-gl .beats, .no-gl .meter, .no-gl .cue, .no-gl #gl { display: none; }
+.no-gl .hero { position: relative; left: auto; right: auto; bottom: auto; padding: 8rem var(--pad) 4rem; }
+
+@media (max-width: 860px) {
+  .top .links { display: none; }
+  .top { padding-right: calc(var(--pad) + 8rem); }
+  .proj { grid-template-columns: minmax(0, 1fr); }
+  .tracks { grid-template-columns: minmax(0, 1fr); gap: 2.2rem; }
+  .row { grid-template-columns: minmax(0, 1fr); gap: 0.4rem; }
+  .meter { left: var(--pad); right: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 2.2vh); }
+  .meter span { width: 5rem; }
+  .cue { display: none; }
+  .hero, .beats { bottom: calc(env(safe-area-inset-bottom, 0px) + 7.5vh); }
+  .hero h1 { font-size: clamp(3rem, 15.5vw, 6rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cue::before { animation: none; }
+  .js .wf .draw { stroke-dashoffset: 0; }
+  .js .proj.in .wf .draw { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="#top">Shravan Bhande</a>
+  <nav class="links" aria-label="Main">
+    <a href="#work">Work</a>
+    <a href="#skills">Skills</a>
+    <a href="#experience">Experience</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+<a class="pill" href="mailto:bhandeshravan07@gmail.com">Email me</a>
+
+<main id="top">
+  <section class="story" id="story">
+    <div class="stage">
+      <canvas id="gl" aria-hidden="true"></canvas>
+
+      <div class="hero" id="hero">
+        <h1 class="wide">Shravan<br>Bhande</h1>
+        <p class="role">Web developer and interior &amp; 3D visualization designer</p>
+        <p class="sub">I build responsive websites and visualize interiors in 3D. BSc Mathematics &amp; Physics student in Mumbai, open to junior roles.</p>
+        <div class="actions">
+          <a class="btn main" href="#work">See my work</a>
+          <a class="btn ghost" href="mailto:bhandeshravan07@gmail.com">bhandeshravan07@gmail.com</a>
+        </div>
+        <p class="quick">
+          <a href="https://github.com/Shravan-000" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://linkedin.com/in/shravan-bhande-4435a92a2" target="_blank" rel="noopener">LinkedIn</a>
+          <span class="dim">Mumbai, India</span>
+        </p>
+      </div>
+
+      <div class="beats" id="beats" aria-hidden="true">
+        <article class="beat">
+          <h2 class="wide">Structure</h2>
+          <p>A page starts the way a room does: floor, walls and openings. I write clean HTML5 first, so everything after it has something solid to stand on.</p>
+          <p class="tech"><b></b>HTML5</p>
+        </article>
+        <article class="beat">
+          <h2 class="wide">Style</h2>
+          <p>Color, material and proportion make a space feel considered. CSS3 does that on screen. Autodesk 3ds Max does it in 3D.</p>
+          <p class="tech"><b></b>CSS3, Autodesk 3ds Max</p>
+        </article>
+        <article class="beat">
+          <h2 class="wide">Light</h2>
+          <p>JavaScript makes a page respond, and light makes a render feel real. That is where a layout turns into a place.</p>
+          <p class="tech"><b></b>JavaScript, interior visualization</p>
+        </article>
+      </div>
+
+      <div class="meter" id="meter" aria-hidden="true">
+        <span><i></i>Structure</span><span><i></i>Style</span><span><i></i>Light</span>
+      </div>
+      <div class="cue" id="cue">Scroll to build the room</div>
+    </div>
+  </section>
+
+  <section class="sec" id="work">
+    <div class="wrap">
+      <h2 class="wide h2">Selected work</h2>
+      <p class="lead">Two projects built with HTML5, CSS3 and JavaScript. Open them and look at the code.</p>
+
+      <div class="projects">
+        <article class="proj">
+          <div>
+            <h3 class="wide">Aura Interiors</h3>
+            <p>A luxury interior design showcase website. I debugged and restructured the code, then deployed it live on GitHub Pages.</p>
+            <p class="tech">HTML5, CSS3, JavaScript, GitHub Pages</p>
+            <a class="btn main" href="https://shravan-000.github.io/aura-interiors/" target="_blank" rel="noopener">Visit the live site</a>
+          </div>
+          <a class="art" href="https://shravan-000.github.io/aura-interiors/" target="_blank" rel="noopener" aria-label="Open the Aura Interiors live site">
+            <svg class="wf" viewBox="0 0 640 420" aria-hidden="true">
+              <rect class="fill" x="2" y="44" width="636" height="374" rx="0" fill="#E5E8E1"/>
+              <rect class="fill" x="30" y="100" width="360" height="230" fill="#12171F"/>
+              <rect class="fill" x="60" y="126" width="110" height="120" fill="#E8DFCF"/>
+              <rect class="fill" x="80" y="266" width="200" height="40" fill="#FF5B1F"/>
+              <rect class="fill" x="300" y="150" width="6" height="156" fill="#E8DFCF"/>
+              <circle class="fill" cx="303" cy="140" r="22" fill="#FF5B1F"/>
+              <rect class="fill" x="410" y="226" width="96" height="32" fill="#FF5B1F"/>
+              <rect class="fill" x="30" y="348" width="184" height="56" fill="#E8DFCF"/>
+              <rect class="fill" x="228" y="348" width="184" height="56" fill="#FF5B1F"/>
+              <rect class="fill" x="426" y="348" width="184" height="56" fill="#12171F"/>
+              <rect class="ln draw" pathLength="1" x="2" y="2" width="636" height="416" rx="12"/>
+              <path class="ln draw" pathLength="1" d="M2 44H638"/>
+              <circle class="ln draw" pathLength="1" cx="24" cy="23" r="5"/><circle class="ln draw" pathLength="1" cx="42" cy="23" r="5"/><circle class="ln draw" pathLength="1" cx="60" cy="23" r="5"/>
+              <rect class="ln draw" pathLength="1" x="200" y="12" width="240" height="20" rx="10"/>
+              <rect class="ln draw" pathLength="1" x="30" y="62" width="70" height="14"/>
+              <path class="ln draw" pathLength="1" d="M440 69H480M510 69H550M580 69H610"/>
+              <rect class="ln draw" pathLength="1" x="30" y="100" width="360" height="230"/>
+              <g class="xx"><path class="ln draw" pathLength="1" d="M30 100L390 330M390 100L30 330"/></g>
+              <path class="ln draw" pathLength="1" d="M410 110H600M410 134H550M410 172H600M410 190H600M410 208H570"/>
+              <rect class="ln draw" pathLength="1" x="410" y="226" width="96" height="32"/>
+              <rect class="ln draw" pathLength="1" x="30" y="348" width="184" height="56"/>
+              <rect class="ln draw" pathLength="1" x="228" y="348" width="184" height="56"/>
+              <rect class="ln draw" pathLength="1" x="426" y="348" width="184" height="56"/>
+            </svg>
+            <span class="cap">Wireframe sketch of the site. Hover to render it.</span>
+          </a>
+        </article>
+
+        <article class="proj">
+          <div>
+            <h3 class="wide">Gradient Fitness</h3>
+            <p>A responsive website for a fitness brand that adapts from phone screens to desktop.</p>
+            <p class="tech">HTML5, CSS3, JavaScript, responsive design</p>
+            <a class="btn main" href="https://github.com/Shravan-000" target="_blank" rel="noopener">View the code on GitHub</a>
+          </div>
+          <a class="art" href="https://github.com/Shravan-000" target="_blank" rel="noopener" aria-label="Open Shravan's GitHub to see the Gradient Fitness code">
+            <svg class="wf" viewBox="0 0 640 420" aria-hidden="true">
+              <defs>
+                <linearGradient id="gfg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF5B1F"/><stop offset="1" stop-color="#3B2BD8"/></linearGradient>
+                <linearGradient id="gfg2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3B2BD8"/><stop offset="1" stop-color="#FF5B1F"/></linearGradient>
+              </defs>
+              <rect class="fill" x="2" y="44" width="636" height="374" fill="url(#gfg)"/>
+              <circle class="fill" cx="520" cy="176" r="84" fill="#F1F3EE"/>
+              <circle class="fill" cx="520" cy="150" r="28" fill="#12171F"/>
+              <rect class="fill" x="30" y="214" width="110" height="34" fill="#12171F"/>
+              <rect class="fill" x="30" y="282" width="190" height="34" fill="#F1F3EE"/>
+              <rect class="fill" x="228" y="282" width="190" height="34" fill="#F1F3EE"/>
+              <rect class="fill" x="426" y="282" width="184" height="34" fill="#F1F3EE"/>
+              <rect class="fill" x="30" y="334" width="184" height="70" fill="#12171F"/>
+              <rect class="fill" x="228" y="334" width="184" height="70" fill="#12171F"/>
+              <rect class="fill" x="426" y="334" width="184" height="70" fill="#12171F"/>
+              <rect class="ln draw" pathLength="1" x="2" y="2" width="636" height="416" rx="12"/>
+              <path class="ln draw" pathLength="1" d="M2 44H638"/>
+              <circle class="ln draw" pathLength="1" cx="24" cy="23" r="5"/><circle class="ln draw" pathLength="1" cx="42" cy="23" r="5"/><circle class="ln draw" pathLength="1" cx="60" cy="23" r="5"/>
+              <rect class="ln draw" pathLength="1" x="200" y="12" width="240" height="20" rx="10"/>
+              <rect class="ln draw" pathLength="1" x="30" y="62" width="70" height="14"/>
+              <path class="ln draw" pathLength="1" d="M440 69H480M510 69H550M580 69H610"/>
+              <rect class="ln draw" pathLength="1" x="30" y="104" width="400" height="30"/>
+              <rect class="ln draw" pathLength="1" x="30" y="144" width="320" height="30"/>
+              <path class="ln draw" pathLength="1" d="M30 192H330"/>
+              <rect class="ln draw" pathLength="1" x="30" y="214" width="110" height="34"/>
+              <circle class="ln draw" pathLength="1" cx="520" cy="176" r="84"/>
+              <g class="xx"><path class="ln draw" pathLength="1" d="M460 116L580 236M580 116L460 236"/></g>
+              <rect class="ln draw" pathLength="1" x="30" y="282" width="190" height="34"/>
+              <rect class="ln draw" pathLength="1" x="228" y="282" width="190" height="34"/>
+              <rect class="ln draw" pathLength="1" x="426" y="282" width="184" height="34"/>
+              <rect class="ln draw" pathLength="1" x="30" y="334" width="184" height="70"/>
+              <rect class="ln draw" pathLength="1" x="228" y="334" width="184" height="70"/>
+              <rect class="ln draw" pathLength="1" x="426" y="334" width="184" height="70"/>
+            </svg>
+            <span class="cap">Wireframe sketch of the site. Hover to render it.</span>
+          </a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec alt" id="skills">
+    <div class="wrap">
+      <h2 class="wide h2">Skills</h2>
+      <p class="lead">Two tracks that meet in the same place: designing a space people can move through, on screen and in 3D.</p>
+      <div class="tracks">
+        <div class="track">
+          <h3>Build for the web</h3>
+          <ul><li>HTML5</li><li>CSS3</li><li>JavaScript</li><li>Responsive layouts</li><li>GitHub Pages deployment</li></ul>
+        </div>
+        <div class="track">
+          <h3>Visualize in 3D</h3>
+          <ul><li>Autodesk 3ds Max<small>Certified</small></li><li>Interior visualization</li></ul>
+        </div>
+        <div class="track">
+          <h3>Foundations</h3>
+          <ul><li>Mathematics and physics</li><li>Quality analysis</li><li>Data entry</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="experience">
+    <div class="wrap">
+      <h2 class="wide h2">Experience and education</h2>
+      <div class="rows">
+        <div class="row"><h3>Quality Analysis Intern</h3><p>NSight Corp</p></div>
+        <div class="row"><h3>Data Entry Intern</h3><p>Soham Enterprises</p></div>
+        <div class="row"><h3>BSc Mathematics &amp; Physics</h3><p>Sathaye College, Santacruz (East), Mumbai</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec dark" id="contact">
+    <div class="wrap">
+      <h2 class="wide h2">Let's work together</h2>
+      <p class="lead">I'm open to junior web development and 3D visualization roles. Email is the fastest way to reach me.</p>
+      <div class="mail-row">
+        <a class="mail" id="mail" href="mailto:bhandeshravan07@gmail.com">bhandeshravan07@gmail.com</a>
+        <button type="button" class="copy" id="copy">Copy email</button>
+      </div>
+      <ul class="social">
+        <li><a href="https://github.com/Shravan-000" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://linkedin.com/in/shravan-bhande-4435a92a2" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li>Mumbai, India</li>
+      </ul>
+      <div class="foot"><span>&copy; 2026 Shravan Bhande</span><span>Built with HTML, CSS, JavaScript and Three.js</span></div>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var root = document.documentElement;
+  root.classList.add('js');
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function smooth(a, b, x) { var t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
+  function mixc(a, b, t) { return [Math.round(lerp(a[0], b[0], t)), Math.round(lerp(a[1], b[1], t)), Math.round(lerp(a[2], b[2], t))]; }
+  function rgb(c) { return 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'; }
+
+  /* ---------- copy email ---------- */
+  var copyBtn = document.getElementById('copy'), mailEl = document.getElementById('mail');
+  copyBtn.addEventListener('click', function () {
+    var text = 'bhandeshravan07@gmail.com', done = function (ok) {
+      copyBtn.textContent = ok ? 'Copied' : 'Selected, press copy';
+      setTimeout(function () { copyBtn.textContent = 'Copy email'; }, 2200);
+    };
+    function fallback() {
+      var ok = false;
+      try {
+        var ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+        document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); document.body.removeChild(ta);
+      } catch (e) {}
+      if (!ok) { var r = document.createRange(); r.selectNodeContents(mailEl); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+      done(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+    else fallback();
+  });
+
+  /* ---------- project sketches draw in once ---------- */
+  var projs = document.querySelectorAll('.proj');
+  if ('IntersectionObserver' in window) {
+    var pio = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); pio.unobserve(e.target); } }); }, { threshold: 0.25 });
+    projs.forEach(function (p) { pio.observe(p); });
+  } else { projs.forEach(function (p) { p.classList.add('in'); }); }
+
+  /* ---------- scroll story UI (works with or without WebGL) ---------- */
+  var story = document.getElementById('story'), stage = story.querySelector('.stage');
+  var hero = document.getElementById('hero'), beatEls = document.querySelectorAll('.beat');
+  var meter = document.getElementById('meter'), cue = document.getElementById('cue');
+  var meterFills = meter.querySelectorAll('i');
+  var NIGHT = [13, 16, 21], LIME = [229, 232, 225], FGD = [241, 243, 238], INK = [18, 23, 31], SOFTD = [169, 178, 189], SOFTL = [75, 85, 96];
+  var BEATS = [[0.14, 0.34], [0.38, 0.62], [0.66, 1.4]];
+
+  var targetP = 0, p = 0;
+  function readScroll() {
+    var r = story.getBoundingClientRect(), total = Math.max(1, r.height - window.innerHeight);
+    targetP = clamp(-r.top / total, 0, 1);
+  }
+  window.addEventListener('scroll', readScroll, { passive: true });
+  window.addEventListener('resize', readScroll);
+  readScroll(); p = targetP;
+
+  function themeT(pp) { return smooth(0.53, 0.66, pp); }
+
+  function updateUI(pp) {
+    var t = themeT(pp);
+    stage.style.setProperty('--bg', rgb(mixc(NIGHT, LIME, t)));
+    stage.style.setProperty('--fg', rgb(t < 0.5 ? FGD : INK));
+    stage.style.setProperty('--soft', rgb(t < 0.5 ? SOFTD : SOFTL));
+
+    var h = 1 - smooth(0.03, 0.12, pp);
+    hero.style.opacity = h;
+    hero.style.transform = 'translateY(' + ((1 - h) * -28) + 'px)';
+    hero.style.pointerEvents = h < 0.2 ? 'none' : 'auto';
+
+    for (var i = 0; i < beatEls.length; i++) {
+      var a = BEATS[i][0], b = BEATS[i][1];
+      var o = smooth(a, a + 0.045, pp) * (1 - smooth(b - 0.045, b, pp));
+      beatEls[i].style.opacity = o;
+      beatEls[i].style.transform = 'translateY(' + ((1 - o) * 22) + 'px)';
+      var f = clamp((pp - a) / (Math.min(b, 1) - a), 0, 1);
+      meterFills[i].style.setProperty('--f', f);
+    }
+    meter.style.opacity = smooth(0.1, 0.16, pp);
+    cue.style.opacity = 1 - smooth(0.0, 0.03, pp);
+  }
+
+  /* ---------- WebGL room ---------- */
+  var canvas = document.getElementById('gl'), renderer = null;
+  if (!window.THREE) { root.classList.add('no-gl'); updateUI(0); return; }
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+  } catch (e) { root.classList.add('no-gl'); updateUI(0); return; }
+
+  try { buildScene(); } catch (err) { root.classList.add('no-gl'); updateUI(0); if (window.console) console.error(err); }
+
+  function buildScene() {
+    var small = Math.min(window.innerWidth, window.innerHeight) < 700;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 1.75 : 2));
+    renderer.setClearColor(0x000000, 0);
+    renderer.localClippingEnabled = true;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+    var world = new THREE.Group(); scene.add(world);
+
+    var sweep = new THREE.Plane(new THREE.Vector3(0, -1, 0), -1);
+    var clip = [sweep];
+    var wireMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
+    var accentMat = new THREE.LineBasicMaterial({ color: 0xFF5B1F, transparent: true, opacity: 0.95 });
+
+    function solid(color, o) {
+      var m = new THREE.MeshStandardMaterial({ color: color, roughness: 0.85, metalness: 0 });
+      if (o) for (var k in o) m[k] = o[k];
+      m.clippingPlanes = clip; m.clipShadows = true; return m;
+    }
+    function addEdges(mesh, accent) {
+      var l = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 25), accent ? accentMat : wireMat);
+      mesh.add(l);
+    }
+    function B(parent, w, h, d, color, x, y, z, o) {
+      o = o || {};
+      var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), solid(color, o.mat));
+      m.position.set(x, y, z); m.castShadow = !o.noShadow; m.receiveShadow = true;
+      parent.add(m); if (!o.noEdges) addEdges(m, o.accent); return m;
+    }
+    function C(parent, rt, rb, h, color, x, y, z, seg, o) {
+      o = o || {};
+      var m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg || 28), solid(color, o.mat));
+      m.position.set(x, y, z); m.castShadow = !o.noShadow; m.receiveShadow = true;
+      parent.add(m); if (!o.noEdges) addEdges(m, o.accent); return m;
+    }
+
+    var BACK = '#3B4CB8', LEFT = '#2F3D96', OAT = '#E8DFCF', INKC = '#1B2133', ORANGE = '#FF5B1F', WALNUT = '#5B3A24', OAK = '#D8B98C', WHITE = '#F2F2F4';
+
+    /* floor */
+    function floorTexture() {
+      var c = document.createElement('canvas'); c.width = c.height = 512;
+      var g = c.getContext('2d'), rows = 8, rh = 64;
+      for (var r = 0; r < rows; r++) {
+        var x = -Math.random() * 160;
+        while (x < 512) {
+          var w = 150 + Math.random() * 130;
+          g.fillStyle = 'hsl(32,' + (24 + Math.random() * 7) + '%,' + (60 + Math.random() * 7) + '%)';
+          g.fillRect(x, r * rh, w, rh);
+          g.fillStyle = 'rgba(70,36,12,0.32)'; g.fillRect(x, r * rh, 2, rh);
+          x += w;
+        }
+        g.fillStyle = 'rgba(70,36,12,0.32)'; g.fillRect(0, r * rh, 512, 2);
+      }
+      var t = new THREE.CanvasTexture(c); t.anisotropy = renderer.capabilities.getMaxAnisotropy(); return t;
+    }
+    B(world, 6.4, 0.2, 6.4, '#9A7048', 0, -0.1, 0, { noShadow: true });
+    var planks = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 6.4), new THREE.MeshStandardMaterial({ map: floorTexture(), roughness: 0.8 }));
+    planks.material.clippingPlanes = clip; planks.material.clipShadows = true;
+    planks.rotation.x = -Math.PI / 2; planks.position.y = 0.003; planks.receiveShadow = true; world.add(planks);
+
+    var grid = new THREE.GridHelper(6.4, 16, 0xffffff, 0xffffff);
+    grid.material.transparent = true; grid.material.opacity = 0.2; grid.position.y = 0.01; world.add(grid);
+
+    /* walls with a window */
+    var N = { noShadow: true };
+    B(world, 1.2, 3.6, 0.2, BACK, -2.6, 1.8, -3.1, N);
+    B(world, 3.4, 3.6, 0.2, BACK, 1.3, 1.8, -3.1, N);
+    B(world, 1.6, 1.5, 0.2, BACK, -1.2, 0.75, -3.1, N);
+    B(world, 1.6, 0.6, 0.2, BACK, -1.2, 3.3, -3.1, N);
+    B(world, 0.2, 3.6, 6.2, LEFT, -3.1, 1.8, -0.1, N);
+    var glass = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.5), solid('#CFE8FF', { transparent: true, opacity: 0.4, roughness: 0.1, depthWrite: false }));
+    glass.position.set(-1.2, 2.25, -3.1); world.add(glass);
+    B(world, 1.8, 0.07, 0.34, WHITE, -1.2, 1.52, -3.0, { accent: true });
+    B(world, 0.05, 1.5, 0.06, WHITE, -1.2, 2.25, -3.08, { noEdges: true });
+    B(world, 1.6, 0.05, 0.06, WHITE, -1.2, 2.25, -3.08, { noEdges: true });
+
+    /* rug */
+    B(world, 3.0, 0.02, 2.2, OAT, -0.7, 0.01, 0.9, { noShadow: true });
+    B(world, 2.7, 0.024, 1.9, INKC, -0.7, 0.012, 0.9, { noShadow: true, noEdges: true });
+    B(world, 2.45, 0.028, 1.65, OAT, -0.7, 0.014, 0.9, { noShadow: true, noEdges: true });
+
+    /* desk */
+    B(world, 2.6, 0.08, 1.2, WALNUT, 1.0, 1.01, -2.3);
+    [[-0.22, -2.82], [2.22, -2.82], [-0.22, -1.78], [2.22, -1.78]].forEach(function (q) { B(world, 0.07, 1.0, 0.07, '#43291A', q[0], 0.5, q[1]); });
+
+    /* laptop with a live code screen */
+    var sc = document.createElement('canvas'); sc.width = 320; sc.height = 200;
+    var sg = sc.getContext('2d'), screenTex = new THREE.CanvasTexture(sc);
+    var codeLines = [], codeCols = ['#8FB4FF', '#FFB36B', '#8EE0A8', '#E7EBF6'];
+    for (var i = 0; i < 30; i++) { var segs = [], n = 2 + Math.floor(Math.random() * 3); for (var j = 0; j < n; j++) segs.push([14 + Math.random() * 70, Math.floor(Math.random() * 4)]); codeLines.push({ ind: Math.floor(Math.random() * 4), segs: segs }); }
+    function drawScreen(t) {
+      sg.fillStyle = '#0F1424'; sg.fillRect(0, 0, 320, 200);
+      sg.fillStyle = '#1B2340'; sg.fillRect(0, 0, 320, 22);
+      ['#FF6B6B', '#FFC857', '#6BCB77'].forEach(function (c, k) { sg.fillStyle = c; sg.fillRect(10 + k * 14, 8, 8, 8); });
+      var lh = 14, off = (t * 16) % (lh * codeLines.length); sg.globalAlpha = 0.9;
+      for (var a = 0; a < codeLines.length + 14; a++) {
+        var L = codeLines[a % codeLines.length], y = 30 + a * lh - off; if (y < 24 || y > 194) continue;
+        var x = 14 + L.ind * 14;
+        for (var b = 0; b < L.segs.length; b++) { sg.fillStyle = codeCols[L.segs[b][1]]; sg.fillRect(x, y, L.segs[b][0], 6); x += L.segs[b][0] + 8; }
+      }
+      sg.globalAlpha = 1; screenTex.needsUpdate = true;
+    }
+    drawScreen(0);
+    var lap = new THREE.Group(); lap.position.set(0.7, 1.05, -2.3); lap.rotation.y = -0.1; world.add(lap);
+    B(lap, 0.9, 0.05, 0.62, '#C9CED6', 0, 0.025, 0);
+    var hinge = new THREE.Group(); hinge.position.set(0, 0.05, -0.3); hinge.rotation.x = -0.2; lap.add(hinge);
+    B(hinge, 0.9, 0.6, 0.035, '#C9CED6', 0, 0.3, 0);
+    var screen = new THREE.Mesh(new THREE.PlaneGeometry(0.82, 0.52), new THREE.MeshBasicMaterial({ map: screenTex }));
+    screen.material.clippingPlanes = clip; screen.position.set(0, 0.3, 0.0185); hinge.add(screen);
+    C(world, 0.07, 0.06, 0.1, ORANGE, 1.55, 1.1, -2.0, 16);
+    B(world, 0.5, 0.05, 0.36, OAT, 1.9, 1.065, -2.45); B(world, 0.45, 0.05, 0.32, ORANGE, 1.9, 1.115, -2.45);
+
+    /* chair */
+    var chair = new THREE.Group(); chair.position.set(1.0, 0, -1.2); chair.rotation.y = 0.3; world.add(chair);
+    B(chair, 0.62, 0.08, 0.62, ORANGE, 0, 0.5, 0);
+    [[-0.26, -0.26], [0.26, -0.26], [-0.26, 0.26], [0.26, 0.26]].forEach(function (q) { B(chair, 0.05, 0.5, 0.05, '#2B2F3A', q[0], 0.25, q[1], { noEdges: true }); });
+    B(chair, 0.62, 0.6, 0.07, ORANGE, 0, 0.9, 0.28);
+
+    /* pin board */
+    var board = new THREE.Group(); board.position.set(1.3, 2.5, -3.0); world.add(board);
+    B(board, 1.7, 1.1, 0.04, '#43291A', 0, 0, 0.02, { noShadow: true });
+    B(board, 1.6, 1.0, 0.05, '#C48A55', 0, 0, 0.045, { noShadow: true, noEdges: true });
+    [['#FFE08A', -0.5, 0.2, 0.08], [WHITE, -0.05, -0.15, -0.06], ['#8FE0D3', 0.42, 0.22, 0.05], ['#FFB3A8', 0.5, -0.22, -0.09]].forEach(function (nn) {
+      var g = new THREE.Group(); g.position.set(nn[1], nn[2], 0.075); g.rotation.z = nn[3]; board.add(g);
+      B(g, 0.34, 0.34, 0.012, nn[0], 0, 0, 0, { noShadow: true, noEdges: true });
+      B(g, 0.2, 0.012, 0.006, '#6C7388', 0, 0.06, 0.008, { noShadow: true, noEdges: true });
+      B(g, 0.14, 0.012, 0.006, '#6C7388', -0.03, 0.01, 0.008, { noShadow: true, noEdges: true });
+    });
+
+    /* sofa along the left wall */
+    var sofa = new THREE.Group(); sofa.position.set(-2.45, 0, 1.65); world.add(sofa);
+    var SOFAC = '#EDEAE2';
+    B(sofa, 0.95, 0.28, 2.3, SOFAC, 0, 0.3, 0);
+    B(sofa, 0.8, 0.14, 1.05, '#F6F4EE', 0.05, 0.51, -0.55);
+    B(sofa, 0.8, 0.14, 1.05, '#F6F4EE', 0.05, 0.51, 0.55);
+    B(sofa, 0.25, 0.7, 2.3, SOFAC, -0.35, 0.78, 0);
+    B(sofa, 0.95, 0.5, 0.2, SOFAC, 0, 0.5, -1.05);
+    B(sofa, 0.95, 0.5, 0.2, SOFAC, 0, 0.5, 1.05);
+    var pillow = B(sofa, 0.12, 0.36, 0.36, ORANGE, -0.12, 0.8, 0.6); pillow.rotation.z = -0.18;
+    B(sofa, 0.12, 0.34, 0.34, INKC, -0.12, 0.8, -0.55, { noEdges: true });
+    [[-0.38, -1.05], [0.38, -1.05], [-0.38, 1.05], [0.38, 1.05]].forEach(function (q) { B(sofa, 0.06, 0.16, 0.06, '#2B2F3A', q[0], 0.08, q[1], { noEdges: true }); });
+
+    /* coffee table, pouf */
+    C(world, 0.45, 0.45, 0.04, INKC, -1.0, 0.4, 1.55, 36);
+    C(world, 0.05, 0.05, 0.38, '#2B2F3A', -1.0, 0.2, 1.55, 12, { noEdges: true });
+    C(world, 0.3, 0.3, 0.02, '#2B2F3A', -1.0, 0.01, 1.55, 24, { noEdges: true });
+    C(world, 0.32, 0.34, 0.34, '#E8E0D0', 1.55, 0.17, 0.55, 28);
+
+    /* framed art above the sofa */
+    function artTexture() {
+      var c = document.createElement('canvas'); c.width = 400; c.height = 300; var g = c.getContext('2d');
+      g.fillStyle = OAT; g.fillRect(0, 0, 400, 300);
+      g.fillStyle = ORANGE; g.beginPath(); g.arc(140, 140, 82, 0, Math.PI * 2); g.fill();
+      g.fillStyle = INKC; g.fillRect(210, 60, 120, 190);
+      g.fillStyle = '#3B4CB8'; g.fillRect(40, 232, 320, 18);
+      return new THREE.CanvasTexture(c);
+    }
+    var artFrame = new THREE.Group(); artFrame.position.set(-3.0, 2.2, 1.6); artFrame.rotation.y = Math.PI / 2; world.add(artFrame);
+    B(artFrame, 1.3, 1.0, 0.06, '#1B2133', 0, 0, 0.03, { noShadow: true });
+    var art = new THREE.Mesh(new THREE.PlaneGeometry(1.14, 0.84), new THREE.MeshBasicMaterial({ map: artTexture() }));
+    art.material.clippingPlanes = clip; art.position.z = 0.062; artFrame.add(art);
+
+    /* bookshelf */
+    var shelf = new THREE.Group(); shelf.position.set(-2.75, 0, -0.55); world.add(shelf);
+    B(shelf, 0.04, 2.2, 1.6, '#C9A472', -0.23, 1.1, 0, { noEdges: true });
+    B(shelf, 0.5, 2.2, 0.05, OAK, 0, 1.1, -0.8); B(shelf, 0.5, 2.2, 0.05, OAK, 0, 1.1, 0.8);
+    [0.02, 0.55, 1.1, 1.65, 2.18].forEach(function (y) { B(shelf, 0.5, 0.04, 1.6, OAK, 0, y, 0, { noEdges: true }); });
+    var bookCols = [ORANGE, INKC, '#3B4CB8', OAT, '#41B3A3', '#F2C14E'];
+    [0.04, 0.57, 1.12, 1.67].forEach(function (by) {
+      var z = -0.72;
+      while (z < 0.66) {
+        var w = 0.06 + Math.random() * 0.07, h = 0.28 + Math.random() * 0.16;
+        B(shelf, 0.3, h, w, bookCols[Math.floor(Math.random() * bookCols.length)], -0.05, by + 0.02 + h / 2, z + w / 2);
+        z += w + 0.005;
+      }
+    });
+
+    /* plant: low-poly leaves */
+    var plant = new THREE.Group(); plant.position.set(-2.4, 0, -2.4); world.add(plant);
+    C(plant, 0.28, 0.2, 0.42, '#D2674A', 0, 0.21, 0, 24);
+    var leaves = new THREE.Group(); leaves.position.y = 0.42; plant.add(leaves);
+    for (var li = 0; li < 9; li++) {
+      var piv = new THREE.Group(); piv.rotation.y = li * (Math.PI * 2 / 9) + Math.random() * 0.4; piv.rotation.z = 0.3 + Math.random() * 0.5; leaves.add(piv);
+      var leaf = new THREE.Mesh(new THREE.OctahedronGeometry(1), solid(li % 2 ? '#3F8F5A' : '#2F7A4B'));
+      leaf.scale.set(0.12, 0.45 + Math.random() * 0.15, 0.04); leaf.position.y = 0.42; leaf.castShadow = true; piv.add(leaf); addEdges(leaf);
+    }
+
+    /* floor lamp */
+    var lamp = new THREE.Group(); lamp.position.set(2.65, 0, -2.55); world.add(lamp);
+    C(lamp, 0.24, 0.26, 0.05, '#2B2F3A', 0, 0.025, 0, 28);
+    C(lamp, 0.022, 0.022, 1.7, '#2B2F3A', 0, 0.9, 0, 12, { noEdges: true });
+    lamp.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.05, 0), new THREE.Vector3(0, 1.8, 0)]), accentMat));
+    var shade = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.38, 0.42, 28, 1, true), solid('#FFE2B0', { emissive: new THREE.Color('#FFB86B'), emissiveIntensity: 0.1, side: THREE.DoubleSide }));
+    shade.position.y = 1.85; lamp.add(shade); addEdges(shade, true);
+    var lampLight = new THREE.PointLight('#FFB86B', 0, 5, 1.6); lampLight.position.set(0, 1.8, 0); lamp.add(lampLight);
+
+    /* lights */
+    var hemi = new THREE.HemisphereLight('#FFFFFF', '#B3A18C', 0.78); scene.add(hemi);
+    var sun = new THREE.DirectionalLight('#FFE0BC', 0.8); sun.position.set(-5, 8, 6);
+    sun.castShadow = true; sun.shadow.mapSize.set(small ? 1024 : 2048, small ? 1024 : 2048);
+    sun.shadow.camera.left = -7; sun.shadow.camera.right = 7; sun.shadow.camera.top = 7; sun.shadow.camera.bottom = -7;
+    sun.shadow.camera.near = 1; sun.shadow.camera.far = 30; sun.shadow.bias = -0.0006; scene.add(sun);
+
+    /* sweep indicator: the moment wireframe becomes render */
+    var scan = new THREE.Group(); world.add(scan);
+    var ring = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-3.2, 0, -3.2), new THREE.Vector3(3.2, 0, -3.2), new THREE.Vector3(3.2, 0, 3.2), new THREE.Vector3(-3.2, 0, 3.2)]), new THREE.LineBasicMaterial({ color: 0xFF5B1F }));
+    scan.add(ring);
+    var veil = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 6.4), new THREE.MeshBasicMaterial({ color: 0xFF5B1F, transparent: true, opacity: 0.1, side: THREE.DoubleSide, depthWrite: false }));
+    veil.rotation.x = -Math.PI / 2; scan.add(veil); scan.visible = false;
+
+    /* sizing and view placement */
+    var viewW = 1, viewH = 1, aspect = 1, narrow = false;
+    function resize() {
+      var r = stage.getBoundingClientRect(); viewW = Math.max(1, Math.round(r.width)); viewH = Math.max(1, Math.round(r.height));
+      renderer.setSize(viewW, viewH, false);
+      aspect = viewW / viewH; camera.aspect = aspect; narrow = viewW < 860 || aspect < 0.95;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', resize); resize();
+
+    var mx = 0, my = 0, smx = 0, smy = 0;
+    if (!reduce) window.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      mx = e.clientX / window.innerWidth * 2 - 1; my = e.clientY / window.innerHeight * 2 - 1;
+    }, { passive: true });
+
+    var visible = true;
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }, { rootMargin: '100px' }).observe(story);
+
+    var time = 0, introT = reduce ? 5 : 0, last = performance.now(), lastScreen = 0, sunAngle = -9;
+    var lime = new THREE.Color('#E5E8E1'), cw = new THREE.Color(0xffffff), cink = new THREE.Color('#12171F');
+
+    function frame(now) {
+      requestAnimationFrame(frame);
+      var dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt; introT += dt;
+      p = reduce ? targetP : p + (targetP - p) * (1 - Math.exp(-dt * 7));
+      if (Math.abs(targetP - p) < 0.0004) p = targetP;
+      updateUI(p);
+      if (!visible) return;
+
+      var intro = smooth(0, 1.4, introT), t = themeT(p);
+      var s = smooth(0.36, 0.66, p), lp = smooth(0.66, 1.0, p);
+
+      /* wireframe to render */
+      sweep.constant = s <= 0 ? -1 : (s >= 1 ? 20 : lerp(-0.2, 4.1, s));
+      wireMat.color.copy(cw).lerp(cink, t);
+      wireMat.opacity = lerp(0.62, 0.3, t) * intro;
+      accentMat.opacity = 0.95 * intro;
+      grid.material.opacity = 0.2 * (1 - s) * intro;
+      scan.visible = s > 0 && s < 1; scan.position.y = sweep.constant;
+      world.scale.setScalar(lerp(0.9, 1, intro));
+
+      /* light: sun travels, lamp warms up */
+      var ang = lerp(-1.15, 0.7, lp);
+      sun.position.set(Math.sin(ang) * 7 + 1, 8, Math.cos(ang) * 7);
+      sun.color.set('#FFDDB8').lerp(tmpWhite(), lp);
+      sun.intensity = lerp(0.8, 0.78, lp);
+      var lampOn = smooth(0.72, 0.96, p);
+      shade.material.emissiveIntensity = 0.1 + lampOn * 1.0; lampLight.intensity = lampOn * 0.55;
+
+      if (time - lastScreen > 0.08 && p > 0.3) { lastScreen = time; drawScreen(time); }
+
+      /* camera */
+      var a = smooth(0, 1, p);
+      smx += (mx - smx) * (1 - Math.exp(-dt * 4)); smy += (my - smy) * (1 - Math.exp(-dt * 4));
+      var yaw = lerp(0.58, 1.02, a) + smx * 0.07 + (reduce ? 0 : Math.sin(time * 0.25) * 0.03);
+      var pitch = lerp(0.52, 0.4, a) - smy * 0.035;
+      var base = narrow ? Math.max(16.5, 14.2 / aspect) : Math.max(13.8, 10 / aspect * 1.05);
+      var dist = base * lerp(1.0, 0.9, smooth(0.3, 1, p)) * lerp(1.22, 1, intro);
+      var cp = Math.cos(pitch), tx = -0.2, ty = 1.3, tz = -0.2;
+      camera.position.set(tx + dist * Math.sin(yaw) * cp, ty + dist * Math.sin(pitch), tz + dist * Math.cos(yaw) * cp);
+      camera.lookAt(tx, ty, tz);
+      if (narrow) camera.setViewOffset(viewW, viewH, 0, viewH * 0.2, viewW, viewH);
+      else camera.setViewOffset(viewW, viewH, -viewW * 0.15, viewH * 0.03, viewW, viewH);
+
+      renderer.render(scene, camera);
+    }
+    var _w = new THREE.Color('#FFF6E8'); function tmpWhite() { return _w; }
+    requestAnimationFrame(function (n) { last = n; frame(n); });
+  }
+})();
+</script>
+</body>
+</html>
